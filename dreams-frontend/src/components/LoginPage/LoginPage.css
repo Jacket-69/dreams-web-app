@@ -150,6 +150,53 @@
   font-style: italic;
 }
 
+/* Contenedor del campo de contraseña con botón del ojo */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container .form-input {
+  padding-right: 3rem; /* Espacio para el botón del ojo */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.password-toggle-btn:focus {
+  outline: 2px solid rgba(245, 160, 78, 0.5);
+  outline-offset: 2px;
+}
+
+.password-toggle-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+  filter: brightness(0.3); /* Hace el icono más oscuro */
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.password-toggle-btn:hover .password-toggle-icon {
+  opacity: 1;
+  filter: brightness(0.1); /* Aún más oscuro al hacer hover */
+}
+
 /* Botón de inicio de sesión */
 .login-button {
   width: 100%;

@@ -140,7 +140,7 @@ const RecoveryPage = () => {
     // Si no hay errores, proceder con el envío
     console.log('RUT para recuperación:', formData.rut);
     
-    // TODO: Aquí el backend debería:
+    // TODO: Aquí el backend debería: ALEJANDROOOOOOOOOO xd
     // 1. Buscar el correo asociado al RUT
     // 2. Enviar el email de recuperación
     // 3. Retornar el correo al que se envió

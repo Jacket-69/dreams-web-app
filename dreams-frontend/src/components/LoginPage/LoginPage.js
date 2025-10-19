@@ -3,30 +3,39 @@ import { useNavigate } from 'react-router-dom';
 // Importa el archivo CSS
 import './LoginPage.css';
 // Importa el componente de alerta personalizada
-import Alert from '../Alert/Alert'; 
+import Alert from '../Alert/Alert';
+// Importar iconos de visibilidad
+import visibilityIcon from '../../Icons/visibility.svg';
+import visibilityOffIcon from '../../Icons/visibility_off.svg'; 
 
 // URL de la imagen de fondo
 const BG_IMAGE_URL = '/imagen_edificio.jpg';
 // URL del logo
 const LOGO_URL = '/logo_blanco.png';
 
-const LoginPage = () => { // Cambiado a LoginPage para una convención más clara
+const LoginPage = () => {
+  //es un hook de React Router que te permite navegar a otras páginas
   const navigate = useNavigate();
   
+  //Estado para el formulario de login que se inicializa con email y contraseña vacíos
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
+  //Estado para los errores de validación que se inicializa con email y contraseña vacíos
   const [errors, setErrors] = useState({
     email: '',
     password: ''
   });
 
+  //Estado para los campos que se han tocado (se han interactuado) que se inicializa con email y contraseña false
   const [touched, setTouched] = useState({
     email: false,
     password: false
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   // Función para validar email
   const validateEmail = (email) => {
@@ -55,6 +64,7 @@ const LoginPage = () => { // Cambiado a LoginPage para una convención más clar
     setErrors(newErrors);
   }, [formData, touched]);
 
+  //Si escribes "usuario@ucen.cl" en el campo email, actualiza formData.email con ese valor.
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -63,6 +73,8 @@ const LoginPage = () => { // Cambiado a LoginPage para una convención más clar
     }));
   };
 
+  //Se ejecuta cuando el usuario sale de un campo (hace clic fuera o presiona Tab)
+  //Esto activa las validaciones en tiempo real para mostrar errores
   const handleInputBlur = (e) => {
     const { name } = e.target;
     setTouched(prev => ({
@@ -71,9 +83,15 @@ const LoginPage = () => { // Cambiado a LoginPage para una convención más clar
     }));
   };
 
+  //Te manda a la página de recuperación de contraseña
   const handleRecoveryClick = () => {
     navigate('/recovery');
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -89,16 +107,17 @@ const LoginPage = () => { // Cambiado a LoginPage para una convención más clar
     const passwordError = validatePassword(formData.password);
 
     if (emailError || passwordError) {
+      //Si hay errores, actualiza los errores con el email y contraseña respectivamente
       setErrors({
         email: emailError,
         password: passwordError
       });
-      return;
+      return; //Si hay errores, no se envía el formulario y se muestra el error
     }
 
     // Si no hay errores, proceder con el envío
     console.log('Datos del formulario:', formData);
-    // Aquí iría la lógica del backend
+    // Aquí iría la lógica del backend para verificar el email y contraseña ALEJANDROOOOOOOOOO
   };
 
   return (
@@ -146,16 +165,30 @@ const LoginPage = () => { // Cambiado a LoginPage para una convención más clar
             {/* Campo Contraseña */}
             <div className="form-group">
               <label htmlFor="password" className="form-label">Contraseña</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className={`form-input ${errors.password && touched.password ? 'form-input-error' : ''}`}
-                placeholder="Ingrese su contraseña..."
-                value={formData.password}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-              />
+              <div className="password-input-container">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  className={`form-input ${errors.password && touched.password ? 'form-input-error' : ''}`}
+                  placeholder="Ingrese su contraseña..."
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  onBlur={handleInputBlur}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  <img 
+                    src={showPassword ? visibilityIcon : visibilityOffIcon} 
+                    alt={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    className="password-toggle-icon"
+                  />
+                </button>
+              </div>
               <Alert
                 type="error"
                 message={errors.password}
