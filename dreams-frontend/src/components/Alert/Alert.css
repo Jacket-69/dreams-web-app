@@ -1,0 +1,189 @@
+/* Alertas personalizadas */
+.alert {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: alertSlideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.alert-relative {
+  position: relative;
+}
+
+.alert-absolute {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.alert-fixed {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.alert-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.alert-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.alert-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.alert-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Tipos de alerta */
+.alert-error {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  border-left: 4px solid #d63031;
+}
+
+.alert-error .alert-icon {
+  color: #fff;
+}
+
+.alert-error .alert-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #fdcb6e, #e17055);
+  color: #2d3436;
+  border-left: 4px solid #e17055;
+}
+
+.alert-warning .alert-icon {
+  color: #2d3436;
+}
+
+.alert-warning .alert-close:hover {
+  background-color: rgba(45, 52, 54, 0.1);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #00b894, #00a085);
+  color: white;
+  border-left: 4px solid #00a085;
+}
+
+.alert-success .alert-icon {
+  color: #fff;
+}
+
+.alert-success .alert-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  color: white;
+  border-left: 4px solid #0984e3;
+}
+
+.alert-info .alert-icon {
+  color: #fff;
+}
+
+.alert-info .alert-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Animaciones */
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes alertSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.alert.alert-hiding {
+  animation: alertSlideOut 0.3s ease-in forwards;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .alert {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8rem;
+  }
+  
+  .alert-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .alert-close svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .alert-fixed {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+/* Efectos de hover para alertas interactivas */
+.alert.alert-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}

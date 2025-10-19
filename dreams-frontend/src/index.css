@@ -1,0 +1,313 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-background);
+  color: var(--dark-text);
+}
+
+/* Variables de colores */
+:root {
+  --primary-blue: #354093;
+  --dark-text: #212121;
+  --orange-accent: #F5A04E;
+  --medium-gray: #565555;
+  --light-background: #FAFAFA;
+  --white: #ffffff;
+  --success-green: #22c55e;
+  --warning-yellow: #eab308;
+  --error-red: #ef4444;
+  --paused-gray: #6b7280;
+  --awaiting-gray: #94a3b8;
+  --light-gray: #f8fafc;
+}
+
+/* Layout principal */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+
+
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background-color: var(--primary-blue);
+  padding-top: 130px;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 999;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 1rem 0;
+}
+
+.nav-item {
+  margin: 0.5rem 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--orange-accent);
+  color: var(--orange-accent);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Contenido principal */
+.main-content {
+  margin-left: 280px;
+  margin-top: 130px;
+  padding: 2rem;
+  min-height: calc(100vh - 130px);
+}
+
+/* Tarjeta de proyectos */
+.proyectos-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.card-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1a202c;
+}
+
+.upload-button {
+  background-color: var(--orange-accent);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #ea580c;
+}
+
+/* Barra de búsqueda y filtros */
+.search-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--medium-gray);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--light-blue);
+}
+
+.filter-button {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-button:hover {
+  background-color: #2a3680;
+}
+
+.filter-icon-button {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.filter-icon-button:hover {
+  background-color: #2a3680;
+}
+
+/* Tabla de proyectos */
+.proyectos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.table-header {
+  background-color: var(--light-gray);
+  border-bottom: 2px solid var(--medium-gray);
+}
+
+.table-header th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid var(--medium-gray);
+}
+
+.table-row {
+  border-bottom: 1px solid var(--medium-gray);
+  transition: background-color 0.3s ease;
+}
+
+.table-row:hover {
+  background-color: var(--light-gray);
+}
+
+.table-cell {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+/* Estados de proyectos */
+.status-pill {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-en-proceso {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-para-aprobar {
+  background-color: #fed7aa;
+  color: #9a3412;
+}
+
+.status-esperando-resultado {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.status-pausado {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.status-finalizado {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-rechazado,
+.status-cancelado {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.pagination-button {
+  background-color: var(--white);
+  border: 2px solid var(--medium-gray);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-button:hover {
+  border-color: var(--light-blue);
+  color: var(--light-blue);
+}
+
+.pagination-current {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border-color: var(--primary-blue);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-button {
+    width: 100%;
+  }
+}
