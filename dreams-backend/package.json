@@ -1,0 +1,29 @@
+{
+  "name": "dreams-backend",
+  "version": "1.0.0",
+  "description": "Backend para DREAMS - Sistema de gestión de proyectos y prácticas ICCI",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:prod": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force && npm run db:seed",
+    "db:push": "prisma db push",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"prisma/**/*.ts\""
+  },
+  "keywords": ["dreams", "icci", "proyectos", "practicas"],
+  "author": "Benyi, cualquier cosa yo el pix",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
