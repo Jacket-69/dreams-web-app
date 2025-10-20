@@ -1,0 +1,300 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// ENUMS
+// ========================================
+
+enum NombreRol {
+  ESTUDIANTE
+  DOCENTE
+  GESTOR
+  ADMIN
+}
+
+enum AccionPermiso {
+  GESTIONAR_PROYECTOS
+  GESTIONAR_PRACTICAS
+  VER_REPORTES
+  ADMINISTRAR_USUARIOS
+  GESTIONAR_ASIGNATURAS
+  GESTIONAR_MALLAS
+}
+
+enum EstadoUsuario {
+  ACTIVO
+  INACTIVO
+}
+
+enum TipoProyecto {
+  ASIGNATURA
+  PERSONAL
+  EXTERNO
+}
+
+enum EstadoProyecto {
+  // ASIGNATURA
+  PENDIENTE_APROBACION
+  EN_PROCESO
+  APROBADO
+  REPROBADO
+  
+  // PERSONAL
+  EN_PAUSA
+  CANCELADO
+  FINALIZADO
+  
+  // EXTERNO
+  RECHAZADO
+}
+
+enum TipoMiembro {
+  ESTUDIANTE
+  DOCENTE
+  EXTERNO
+}
+
+enum EstadoInvitacion {
+  PENDIENTE
+  ACEPTADA
+  RECHAZADA
+}
+
+// ========================================
+// MODELOS - USUARIOS Y AUTENTICACIÓN
+// ========================================
+
+model Usuario {
+  id        String        @id @default(uuid())
+  email     String        @unique
+  password  String        // Hash bcrypt
+  nombre    String
+  rut       String        @unique
+  estado    EstadoUsuario @default(ACTIVO)
+  idRol     String        @map("id_rol")
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  deletedAt DateTime?     @map("deleted_at") // Soft delete
+
+  // Relaciones
+  rol                          Rol                        @relation(fields: [idRol], references: [id])
+  perfilEstudiante             PerfilEstudiante?
+  permisosAsignados            UsuarioPermiso[]           @relation("PermisosUsuario")
+  permisosQueAsigno            UsuarioPermiso[]           @relation("AsignadorPermisos")
+  proyectosCreados             Proyecto[]                 @relation("CreadorProyecto")
+  miembroEnProyectos           MiembroProyecto[]
+  historialModificaciones      HistorialEstadoProyecto[]
+  invitacionesRecibidas        InvitacionProyecto[]       @relation("InvitadoProyecto")
+  invitacionesEnviadas         InvitacionProyecto[]       @relation("InvitadorProyecto")
+  asignaturasComoDoncente      DetalleProyectoAsignatura[]
+
+  @@index([email])
+  @@index([rut])
+  @@index([idRol])
+  @@index([estado, deletedAt])
+  @@map("usuario")
+}
+
+model Rol {
+  id          String     @id @default(uuid())
+  nombre      NombreRol  @unique
+  descripcion String?
+
+  // Relaciones
+  usuarios Usuario[]
+
+  @@map("rol")
+}
+
+model Permiso {
+  id          String        @id @default(uuid())
+  accion      AccionPermiso @unique
+  descripcion String
+
+  // Relaciones
+  usuariosConPermiso UsuarioPermiso[]
+
+  @@map("permiso")
+}
+
+model UsuarioPermiso {
+  idUsuario      String   @map("id_usuario")
+  idPermiso      String   @map("id_permiso")
+  asignadoEn     DateTime @default(now()) @map("asignado_en")
+  idAsignadoPor  String?  @map("id_asignado_por")
+
+  // Relaciones
+  usuario     Usuario  @relation("PermisosUsuario", fields: [idUsuario], references: [id], onDelete: Cascade)
+  permiso     Permiso  @relation(fields: [idPermiso], references: [id])
+  asignadoPor Usuario? @relation("AsignadorPermisos", fields: [idAsignadoPor], references: [id])
+
+  @@id([idUsuario, idPermiso])
+  @@index([idUsuario])
+  @@map("usuario_permiso")
+}
+
+// ========================================
+// MODELOS - PERFIL ESTUDIANTE Y MALLA
+// ========================================
+
+model PerfilEstudiante {
+  idUsuario              String    @id @map("id_usuario")
+  idMalla                String    @map("id_malla")
+  buscandoPractica       Boolean   @default(false) @map("buscando_practica")
+  fechaBusquedaActivada  DateTime? @map("fecha_busqueda_activada")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  // Relaciones
+  usuario Usuario @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  malla   Malla   @relation(fields: [idMalla], references: [id])
+
+  @@index([idMalla])
+  @@map("perfil_estudiante")
+}
+
+model Malla {
+  id                  String    @id @default(uuid())
+  codigoVersion       String    @unique @map("codigo_version")
+  descripcion         String?
+  fechaVigenciaInicio DateTime  @map("fecha_vigencia_inicio")
+  fechaVigenciaFin    DateTime? @map("fecha_vigencia_fin")
+
+  // Relaciones
+  asignaturas         Asignatura[]
+  perfilesEstudiantes PerfilEstudiante[]
+
+  @@map("malla")
+}
+
+model Asignatura {
+  id        String   @id @default(uuid())
+  codigo    String   @unique
+  nombre    String
+  semestre  Int
+  idMalla   String   @map("id_malla")
+  activa    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  malla                    Malla                       @relation(fields: [idMalla], references: [id])
+  proyectosAsignatura      DetalleProyectoAsignatura[]
+
+  @@index([idMalla, activa])
+  @@index([codigo])
+  @@map("asignatura")
+}
+
+// ========================================
+// MODELOS - PROYECTOS
+// ========================================
+
+model Proyecto {
+  id               String         @id @default(uuid())
+  nombre           String
+  descripcion      String         @db.Text
+  imagenUrl        String?        @map("imagen_url")
+  tipo             TipoProyecto
+  estado           EstadoProyecto
+  comentarioFinal  String?        @map("comentario_final") @db.Text
+  idCreador        String         @map("id_creador")
+  ultimaActividad  DateTime?      @map("ultima_actividad")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  // Relaciones
+  creador              Usuario                     @relation("CreadorProyecto", fields: [idCreador], references: [id])
+  detalleAsignatura    DetalleProyectoAsignatura?
+  historialEstados     HistorialEstadoProyecto[]
+  miembros             MiembroProyecto[]
+  invitaciones         InvitacionProyecto[]
+
+  @@index([idCreador])
+  @@index([tipo, estado])
+  @@index([ultimaActividad])
+  @@map("proyecto")
+}
+
+model DetalleProyectoAsignatura {
+  idProyecto           String @id @map("id_proyecto")
+  idAsignatura         String @map("id_asignatura")
+  idDocenteAsignatura  String @map("id_docente_asignatura")
+
+  // Relaciones
+  proyecto          Proyecto   @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
+  asignatura        Asignatura @relation(fields: [idAsignatura], references: [id])
+  docenteAsignatura Usuario    @relation(fields: [idDocenteAsignatura], references: [id])
+
+  @@index([idAsignatura])
+  @@index([idDocenteAsignatura])
+  @@map("detalle_proyecto_asignatura")
+}
+
+model HistorialEstadoProyecto {
+  id                     String    @id @default(uuid())
+  idProyecto             String    @map("id_proyecto")
+  estadoAnterior         String    @map("estado_anterior")
+  estadoNuevo            String    @map("estado_nuevo")
+  fechaCambio            DateTime  @default(now()) @map("fecha_cambio")
+  idUsuarioModificador   String?   @map("id_usuario_modificador")
+  motivo                 String?   @db.Text
+  esAutomatico           Boolean   @default(false) @map("es_automatico")
+
+  // Relaciones
+  proyecto           Proyecto @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
+  usuarioModificador Usuario? @relation(fields: [idUsuarioModificador], references: [id])
+
+  @@index([idProyecto])
+  @@index([fechaCambio])
+  @@map("historial_estado_proyecto")
+}
+
+model MiembroProyecto {
+  idUsuario              String      @map("id_usuario")
+  idProyecto             String      @map("id_proyecto")
+  tipoMiembro            TipoMiembro @map("tipo_miembro")
+  rolEnProyecto          String      @map("rol_en_proyecto")
+  esPropietario          Boolean     @default(false) @map("es_propietario")
+  calificacion           Decimal?    @db.Decimal(2, 1) // 1.0 - 7.0
+  comentarioCalificacion String?     @map("comentario_calificacion") @db.Text
+  createdAt              DateTime    @default(now()) @map("created_at")
+
+  // Relaciones
+  usuario  Usuario  @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  proyecto Proyecto @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
+
+  @@id([idUsuario, idProyecto])
+  @@index([idProyecto])
+  @@index([idUsuario])
+  @@map("miembro_proyecto")
+}
+
+model InvitacionProyecto {
+  id           String            @id @default(uuid())
+  idProyecto   String            @map("id_proyecto")
+  idInvitado   String            @map("id_invitado")
+  idInvitador  String            @map("id_invitador")
+  estado       EstadoInvitacion  @default(PENDIENTE)
+  mensaje      String?           @db.Text
+  createdAt    DateTime          @default(now()) @map("created_at")
+  respondidaAt DateTime?         @map("respondida_at")
+
+  // Relaciones
+  proyecto  Proyecto @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
+  invitado  Usuario  @relation("InvitadoProyecto", fields: [idInvitado], references: [id])
+  invitador Usuario  @relation("InvitadorProyecto", fields: [idInvitador], references: [id])
+
+  @@index([idProyecto])
+  @@index([idInvitado, estado])
+  @@map("invitacion_proyecto")
+}
