@@ -5,8 +5,8 @@ import './LoginPage.css';
 // Importa el componente de alerta personalizada
 import Alert from '../Alert/Alert';
 // Importar iconos de visibilidad
-import visibilityIcon from '../../Icons/visibility.svg';
-import visibilityOffIcon from '../../Icons/visibility_off.svg'; 
+import visibilityIcon from '../../../Icons/visibility.svg';
+import visibilityOffIcon from '../../../Icons/visibility_off.svg'; 
 
 // URL de la imagen de fondo
 const BG_IMAGE_URL = '/imagen_edificio.jpg';

@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './components/LoginPage/LoginPage';
-import RecoveryPage from './components/RecoveryPage/RecoveryPage';
-import SuccessPage from './components/SuccessPage/SuccessPage';
-import ChangePasswordPage from './components/ChangePasswordPage/ChangePasswordPage';
+import LoginPage from './components/login/LoginPage/LoginPage';
+import RecoveryPage from './components/login/RecoveryPage/RecoveryPage';
+import SuccessPage from './components/login/SuccessPage/SuccessPage';
+import ChangePasswordPage from './components/login/ChangePasswordPage/ChangePasswordPage';
 
 function App() {
   return (
