@@ -41,19 +41,34 @@
 
 ## Stack Tecnológico
 
+### Backend
+
 | Componente | Tecnología | Versión |
 |------------|------------|---------|
-| Runtime | Node.js | 18+ |
-| Framework Backend | Express | 4.x |
-| Lenguaje | TypeScript | 5.x |
-| ORM | Prisma | 5.x |
-| Base de Datos | PostgreSQL | 14+ |
-| Validación | Zod | 3.x |
-| Auth | JWT | - |
-| Password Hash | Bcrypt | - |
-| Framework Frontend | React | 18.x |
-| Build Tool | Vite | 5.x |
-| Estilos | TailwindCSS | 3.x |
+| **Runtime** | Node.js | 18+ |
+| **Framework** | Express | 4.21.2 |
+| **Lenguaje** | TypeScript | 5.5.4 |
+| **ORM** | Prisma | 5.20.0 |
+| **Base de Datos** | PostgreSQL | 14 (Docker) |
+| **Validación** | Zod | 3.23.8 |
+| **Autenticación** | JWT + Bcrypt | - |
+| **Testing** | Jest + Supertest | 29.x + 7.x |
+| **Linting** | ESLint + Prettier | 8.57.1 |
+| **Rate Limiting** | express-rate-limit | 7.4.1 |
+
+### Frontend (Futuro)
+
+
+### Infraestructura
+
+| Componente | Tecnología |
+|------------|------------|
+| Contenedores | Docker + Docker Compose |
+| Base de Datos | PostgreSQL 14-alpine |
+| Desarrollo | Docker Compose |
+| CI/CD | (Pendiente) |
+| Hosting | (Pendiente) |
+
 
 ## Módulos del Sistema (Backend)
 
