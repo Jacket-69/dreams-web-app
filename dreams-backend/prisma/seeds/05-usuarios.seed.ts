@@ -18,22 +18,6 @@ export async function seedUsuarios(prisma: PrismaClient) {
     throw new Error('Roles no encontrados. Ejecuta seed de roles primero.')
   }
 
-  // Buscar permisos
-  const permisos = {
-    gestionarProyectos: await prisma.permiso.findUnique({
-      where: { accion: AccionPermiso.GESTIONAR_PROYECTOS },
-    }),
-    gestionarPracticas: await prisma.permiso.findUnique({
-      where: { accion: AccionPermiso.GESTIONAR_PRACTICAS },
-    }),
-    verReportes: await prisma.permiso.findUnique({
-      where: { accion: AccionPermiso.VER_REPORTES },
-    }),
-    administrarUsuarios: await prisma.permiso.findUnique({
-      where: { accion: AccionPermiso.ADMINISTRAR_USUARIOS },
-    }),
-  }
-
   // Buscar malla 2023
   const malla2023 = await prisma.malla.findUnique({
     where: { codigoVersion: '2023' },
@@ -43,7 +27,36 @@ export async function seedUsuarios(prisma: PrismaClient) {
     throw new Error('Malla 2023 no encontrada')
   }
 
-  // Rounds de bcrypt
+  // Buscar TODOS los permisos
+  const todosLosPermisos = await prisma.permiso.findMany()
+
+  // Helper para asignar permisos
+  const asignarPermisos = async (
+    usuarioId: string,
+    acciones: AccionPermiso[],
+    asignadoPorId: string
+  ) => {
+    for (const accion of acciones) {
+      const permiso = todosLosPermisos.find(p => p.accion === accion)
+      if (permiso) {
+        await prisma.usuarioPermiso.upsert({
+          where: {
+            idUsuario_idPermiso: {
+              idUsuario: usuarioId,
+              idPermiso: permiso.id,
+            },
+          },
+          update: {},
+          create: {
+            idUsuario: usuarioId,
+            idPermiso: permiso.id,
+            idAsignadoPor: asignadoPorId,
+          },
+        })
+      }
+    }
+  }
+
   const saltRounds = 10
 
   // ============================================
@@ -61,25 +74,30 @@ export async function seedUsuarios(prisma: PrismaClient) {
     },
   })
 
-  // Asignar TODOS los permisos al admin
-  for (const permiso of Object.values(permisos)) {
-    if (permiso) {
-      await prisma.usuarioPermiso.upsert({
-        where: {
-          idUsuario_idPermiso: {
-            idUsuario: admin.id,
-            idPermiso: permiso.id,
-          },
-        },
-        update: {},
-        create: {
-          idUsuario: admin.id,
-          idPermiso: permiso.id,
-          idAsignadoPor: admin.id,
-        },
-      })
-    }
-  }
+  // Admin tiene TODOS los permisos
+  await asignarPermisos(
+    admin.id,
+    [
+      AccionPermiso.VER_MIS_PROYECTOS,
+      AccionPermiso.VER_TODOS_PROYECTOS,
+      AccionPermiso.VER_PROYECTOS_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_PERSONAL,
+      AccionPermiso.CREAR_PROYECTO_EXTERNO,
+      AccionPermiso.APROBAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CALIFICAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.EDITAR_CUALQUIER_PROYECTO,
+      AccionPermiso.ELIMINAR_CUALQUIER_PROYECTO,
+      AccionPermiso.VER_OFERTAS_PRACTICAS,
+      AccionPermiso.GESTIONAR_PRACTICAS,
+      AccionPermiso.VER_ALUMNOS,
+      AccionPermiso.ADMINISTRAR_USUARIOS,
+      AccionPermiso.VER_REPORTES,
+      AccionPermiso.GESTIONAR_ASIGNATURAS,
+      AccionPermiso.GESTIONAR_MALLAS,
+    ],
+    admin.id
+  )
 
   // ============================================
   // 2. GESTOR
@@ -96,25 +114,24 @@ export async function seedUsuarios(prisma: PrismaClient) {
     },
   })
 
-  if (permisos.verReportes) {
-    await prisma.usuarioPermiso.upsert({
-      where: {
-        idUsuario_idPermiso: {
-          idUsuario: gestor.id,
-          idPermiso: permisos.verReportes.id,
-        },
-      },
-      update: {},
-      create: {
-        idUsuario: gestor.id,
-        idPermiso: permisos.verReportes.id,
-        idAsignadoPor: admin.id,
-      },
-    })
-  }
+  // Gestor: Ver todos, crear externos, gestionar prácticas, reportes, académico
+  await asignarPermisos(
+    gestor.id,
+    [
+      AccionPermiso.VER_TODOS_PROYECTOS,
+      AccionPermiso.CREAR_PROYECTO_EXTERNO,
+      AccionPermiso.VER_OFERTAS_PRACTICAS,
+      AccionPermiso.GESTIONAR_PRACTICAS,
+      AccionPermiso.VER_ALUMNOS,
+      AccionPermiso.VER_REPORTES,
+      AccionPermiso.GESTIONAR_ASIGNATURAS,
+      AccionPermiso.GESTIONAR_MALLAS,
+    ],
+    admin.id
+  )
 
   // ============================================
-  // 3. DOCENTE - Mario (Solo Proyectos)
+  // 3. DOCENTE BASE - Mario (Solo Asignaturas)
   // ============================================
   const mario = await prisma.usuario.upsert({
     where: { email: 'mario.ortiz@ucentral.cl' },
@@ -128,25 +145,24 @@ export async function seedUsuarios(prisma: PrismaClient) {
     },
   })
 
-  if (permisos.gestionarProyectos) {
-    await prisma.usuarioPermiso.upsert({
-      where: {
-        idUsuario_idPermiso: {
-          idUsuario: mario.id,
-          idPermiso: permisos.gestionarProyectos.id,
-        },
-      },
-      update: {},
-      create: {
-        idUsuario: mario.id,
-        idPermiso: permisos.gestionarProyectos.id,
-        idAsignadoPor: admin.id,
-      },
-    })
-  }
+  // Mario: Solo proyectos de asignatura
+  await asignarPermisos(
+    mario.id,
+    [
+      AccionPermiso.VER_MIS_PROYECTOS,
+      AccionPermiso.VER_PROYECTOS_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_PERSONAL,
+      AccionPermiso.APROBAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CALIFICAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.VER_OFERTAS_PRACTICAS,
+      AccionPermiso.VER_ALUMNOS,
+    ],
+    admin.id
+  )
 
   // ============================================
-  // 4. DOCENTE - Hans (Proyectos Y Prácticas)
+  // 4. DOCENTE AVANZADO - Hans (Asignaturas + Externos + Prácticas)
   // ============================================
   const hans = await prisma.usuario.upsert({
     where: { email: 'hans.guerrero@ucentral.cl' },
@@ -160,37 +176,24 @@ export async function seedUsuarios(prisma: PrismaClient) {
     },
   })
 
-  if (permisos.gestionarProyectos && permisos.gestionarPracticas) {
-    await prisma.usuarioPermiso.upsert({
-      where: {
-        idUsuario_idPermiso: {
-          idUsuario: hans.id,
-          idPermiso: permisos.gestionarProyectos.id,
-        },
-      },
-      update: {},
-      create: {
-        idUsuario: hans.id,
-        idPermiso: permisos.gestionarProyectos.id,
-        idAsignadoPor: admin.id,
-      },
-    })
-
-    await prisma.usuarioPermiso.upsert({
-      where: {
-        idUsuario_idPermiso: {
-          idUsuario: hans.id,
-          idPermiso: permisos.gestionarPracticas.id,
-        },
-      },
-      update: {},
-      create: {
-        idUsuario: hans.id,
-        idPermiso: permisos.gestionarPracticas.id,
-        idAsignadoPor: admin.id,
-      },
-    })
-  }
+  // Hans: Todo lo de docente + externos + prácticas
+  await asignarPermisos(
+    hans.id,
+    [
+      AccionPermiso.VER_MIS_PROYECTOS,
+      AccionPermiso.VER_TODOS_PROYECTOS,
+      AccionPermiso.VER_PROYECTOS_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_PERSONAL,
+      AccionPermiso.CREAR_PROYECTO_EXTERNO,
+      AccionPermiso.APROBAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CALIFICAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.VER_OFERTAS_PRACTICAS,
+      AccionPermiso.GESTIONAR_PRACTICAS,
+      AccionPermiso.VER_ALUMNOS,
+    ],
+    admin.id
+  )
 
   // ============================================
   // 5. ESTUDIANTE
@@ -202,10 +205,24 @@ export async function seedUsuarios(prisma: PrismaClient) {
       email: 'fabian.silva@ucentral.cl',
       password: await bcrypt.hash('Popo123!', saltRounds),
       nombre: 'Fabián Silva',
-      rut: '69.696.696-9',
+      rut: '55555555-5',
       idRol: roles.estudiante.id,
     },
   })
+
+  // Estudiante: Ver mis proyectos, crear, ver prácticas
+  await asignarPermisos(
+    estudiante.id,
+    [
+      AccionPermiso.VER_MIS_PROYECTOS,
+      AccionPermiso.CREAR_PROYECTO_ASIGNATURA,
+      AccionPermiso.CREAR_PROYECTO_PERSONAL,
+      AccionPermiso.VER_OFERTAS_PRACTICAS,
+      AccionPermiso.VER_MI_PRACTICA,
+      AccionPermiso.POSTULAR_PRACTICA,
+    ],
+    admin.id
+  )
 
   // Crear perfil estudiante
   await prisma.perfilEstudiante.upsert({
@@ -226,4 +243,11 @@ export async function seedUsuarios(prisma: PrismaClient) {
   console.log('   Docente 1:  mario.ortiz@ucentral.cl / Docente123!')
   console.log('   Docente 2:  hans.guerrero@ucentral.cl / Docente123!')
   console.log('   Estudiante: fabian.silva@ucentral.cl / Popo123!')
+  console.log('')
+  console.log('🔑 Permisos asignados según matriz:')
+  console.log('   Admin:      17 permisos (todos)')
+  console.log('   Gestor:     8 permisos')
+  console.log('   Mario:      8 permisos (docente base)')
+  console.log('   Hans:       11 permisos (docente avanzado)')
+  console.log('   Estudiante: 6 permisos')
 }
