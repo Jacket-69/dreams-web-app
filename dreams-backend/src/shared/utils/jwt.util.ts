@@ -8,6 +8,7 @@ export interface JwtPayload {
   userId: string;
   email: string;
   role: string;
+  permissions: string[]
 }
 
 /**
@@ -29,7 +30,7 @@ export class JwtUtil {
    * Verifica y decodifica un token JWT
    * @param token - Token JWT a verificar
    * @returns Payload decodificado del token
-   * @throws Error si el token es inválido o ha expirado
+   * @throws Error si el token es invï¿½lido o ha expirado
    */
   static verify(token: string): JwtPayload {
     const decoded = jwt.verify(token, env.JWT_SECRET);
