@@ -5,8 +5,8 @@ import { env } from './config/env' // Importar variables de entorno validadas
 import { errorHandler } from './middlewares/error.middleware' // Middleware de errores
 import { requestLogger } from './middlewares/logger.middleware' // Middleware de logging
 import authRoutes from './modules/auth/auth.routes' // Rutas de autenticación
+import userRoutes from './modules/users/users.routes' // Rutas de usuarios
 // hola yo del futuro importa futuras rutas aquí (cuando existan)
-// import userRoutes from './modules/users/users.routes';
 // import projectRoutes from './modules/projects/projects.routes';
 // import studentRoutes from './modules/students/students.routes';
 
@@ -48,7 +48,7 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // Montar Módulos (con prefijo /api/v1)
 app.use('/api/v1/auth', authRoutes)
-// app.use('/api/v1/users', userRoutes);     // Descomentar cuando existan
+app.use('/api/v1/users', userRoutes);
 // app.use('/api/v1/projects', projectRoutes); // Descomentar cuando existan
 // app.use('/api/v1/students', studentRoutes); // Descomentar cuando existan
 
