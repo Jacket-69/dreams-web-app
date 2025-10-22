@@ -36,6 +36,13 @@ const LoginPage = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState(null);
+
+  // Limpiar error de API cuando el usuario modifica los campos del formulario
+  useEffect(() => {
+    setApiError(null);
+  }, [formData]);
 
   // Función para validar email
   const validateEmail = (email) => {
@@ -92,8 +99,7 @@ const LoginPage = () => {
     setShowPassword(!showPassword);
   };
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Marcar todos los campos como tocados para mostrar errores
@@ -116,8 +122,39 @@ const LoginPage = () => {
     }
 
     // Si no hay errores, proceder con el envío
-    console.log('Datos del formulario:', formData);
-    // Aquí iría la lógica del backend para verificar el email y contraseña ALEJANDROOOOOOOOOO
+    setIsLoading(true);
+    setApiError(null);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+      }
+
+      // Login exitoso
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Redirigir al dashboard o página principal
+      navigate('/dashboard');
+      
+    } catch (error) {
+      setApiError(error.message || 'Error de conexión. Intente nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -140,6 +177,14 @@ const LoginPage = () => {
         <div className="login-form-container">
           <form className="login-form" onSubmit={handleSubmit} noValidate>
             <h1 className="login-title">INICIAR SESIÓN</h1>
+            
+            {/* Alert para errores de API */}
+            <Alert
+              type="error"
+              message={apiError}
+              show={!!apiError}
+              position="relative"
+            />
             
             {/* Campo Correo UCEN */}
             <div className="form-group">
@@ -197,8 +242,8 @@ const LoginPage = () => {
               />
             </div>
 
-            <button type="submit" className="login-button">
-              INICIAR SESIÓN
+            <button type="submit" className="login-button" disabled={isLoading}>
+              {isLoading ? 'Ingresando...' : 'INICIAR SESIÓN'}
             </button>
 
             <button type="button" className="forgot-password-link" onClick={handleRecoveryClick}>
