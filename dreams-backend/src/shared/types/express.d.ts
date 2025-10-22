@@ -1,7 +1,7 @@
 import { JwtPayload } from '../utils/jwt.util';
 
 /**
- * Extensión de tipos de Express para incluir información del usuario autenticado
+ * ExtensiÃ³n de tipos de Express para incluir informaciÃ³n del usuario autenticado
  */
 declare global {
   namespace Express {
