@@ -22,10 +22,36 @@ enum NombreRol {
 }
 
 enum AccionPermiso {
-  GESTIONAR_PROYECTOS
+  // Proyectos - Visualización
+  VER_MIS_PROYECTOS
+  VER_TODOS_PROYECTOS
+  VER_PROYECTOS_ASIGNATURA
+  
+  // Proyectos - Creación
+  CREAR_PROYECTO_ASIGNATURA
+  CREAR_PROYECTO_PERSONAL
+  CREAR_PROYECTO_EXTERNO
+  
+  // Proyectos - Gestión
+  APROBAR_PROYECTO_ASIGNATURA
+  CALIFICAR_PROYECTO_ASIGNATURA
+  EDITAR_CUALQUIER_PROYECTO
+  ELIMINAR_CUALQUIER_PROYECTO
+  
+  // Prácticas - Estudiante
+  VER_OFERTAS_PRACTICAS
+  VER_MI_PRACTICA
+  POSTULAR_PRACTICA
+  
+  // Prácticas - Gestión
   GESTIONAR_PRACTICAS
-  VER_REPORTES
+  
+  // Usuarios
+  VER_ALUMNOS
   ADMINISTRAR_USUARIOS
+  
+  // Reportes y Académico
+  VER_REPORTES
   GESTIONAR_ASIGNATURAS
   GESTIONAR_MALLAS
 }
@@ -55,12 +81,6 @@ enum EstadoProyecto {
   
   // EXTERNO
   RECHAZADO
-}
-
-enum TipoMiembro {
-  ESTUDIANTE
-  DOCENTE
-  EXTERNO
 }
 
 enum EstadoInvitacion {
@@ -260,20 +280,28 @@ model HistorialEstadoProyecto {
 }
 
 model MiembroProyecto {
-  idUsuario              String      @map("id_usuario")
-  idProyecto             String      @map("id_proyecto")
-  tipoMiembro            TipoMiembro @map("tipo_miembro")
-  rolEnProyecto          String      @map("rol_en_proyecto")
-  esPropietario          Boolean     @default(false) @map("es_propietario")
-  calificacion           Decimal?    @db.Decimal(2, 1) // 1.0 - 7.0
-  comentarioCalificacion String?     @map("comentario_calificacion") @db.Text
-  createdAt              DateTime    @default(now()) @map("created_at")
+  id                     String   @id @default(uuid())
+  idProyecto             String   @map("id_proyecto")
+  
+  // Miembro interno
+  idUsuario              String?  @map("id_usuario")
+  
+  // Miembro externo
+  esExterno              Boolean  @default(false) @map("es_externo")
+  nombreExterno          String?  @map("nombre_externo")
+  emailExterno           String?  @map("email_externo")
+  empresaExterno         String?  @map("empresa_externo")
+  
+  // Común
+  rolEnProyecto          String   @map("rol_en_proyecto")
+  esPropietario          Boolean  @default(false) @map("es_propietario")
+  calificacion           Decimal? @db.Decimal(2, 1)
+  comentarioCalificacion String?  @map("comentario_calificacion") @db.Text
+  createdAt              DateTime @default(now()) @map("created_at")
 
-  // Relaciones
-  usuario  Usuario  @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
-  proyecto Proyecto @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
+  usuario  Usuario?  @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  proyecto Proyecto  @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
 
-  @@id([idUsuario, idProyecto])
   @@index([idProyecto])
   @@index([idUsuario])
   @@map("miembro_proyecto")

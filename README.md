@@ -79,7 +79,7 @@ npm run dev
 |---------|-------|----------|
 | Admin | admin@ucentral.cl | Admin123! |
 | Docente | mario.ortiz@ucentral.cl | Docente123! |
-| Estudiante | juan.perez@ucentral.cl | Estudiante123! |
+| Estudiante | fabian.silva@ucentral.cl | Popo123! |
 
 ---
 
