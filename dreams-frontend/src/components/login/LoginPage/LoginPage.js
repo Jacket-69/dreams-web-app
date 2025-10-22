@@ -126,7 +126,7 @@ const LoginPage = () => {
     setApiError(null);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,12 +137,14 @@ const LoginPage = () => {
         }),
       });
 
-      const data = await response.json();
+      const responseData = await response.json(); // La respuesta completa { status, data }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión');
+        throw new Error(responseData.message || 'Error al iniciar sesión');
       }
 
+      const { data } = responseData; // "Desenvolvemos" el objeto 'data'
+      
       // Login exitoso
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
