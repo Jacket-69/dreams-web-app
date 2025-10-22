@@ -60,20 +60,20 @@ chore(deps): actualizar prisma a v5.7
 ### Branches
 ```
 main          # Código en producción
-develop       # Integración de features
+desarrollo    # Integración de features
 feature/*     # Nuevas funcionalidades
 fix/*         # Correcciones
 ```
 
 ### Crear Features
 ```bash
-git checkout develop
+git checkout desarrollo
 git pull
 git checkout -b feature/nombre-feature
 # ... hacer cambios ...
 git add .
 git commit -m "feat(modulo): descripción"
 git push origin feature/nombre-feature
-# Crear Pull Request a develop
+# Crear Pull Request a desarrollo
 ```
 
