@@ -27,6 +27,16 @@ const envSchema = z.object({
     .default('10')
     .transform((val) => (typeof val === 'string' ? parseInt(val, 10) : val)),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  // Variables de configuración de email
+  MAIL_HOST: z.string().min(1, 'MAIL_HOST es requerido'),
+  MAIL_PORT: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .pipe(z.number().positive())
+    .default('587'),
+  MAIL_USER: z.string().min(1, 'MAIL_USER es requerido'),
+  MAIL_PASS: z.string().min(1, 'MAIL_PASS es requerido'),
+  MAIL_FROM: z.string().email('MAIL_FROM debe ser un email válido'),
 });
 
 // Validar variables de entorno

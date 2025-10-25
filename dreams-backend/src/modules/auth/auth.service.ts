@@ -6,6 +6,7 @@ import { RecoveryDto } from './dto/recovery.dto';
 import { UnauthorizedError, NotFoundError } from '@/shared/errors/app-error';
 import { EstadoUsuario, Usuario } from '@prisma/client';
 import crypto from 'crypto';
+import { sendPasswordResetEmail } from '@/shared/services/email.service';
 
 export class AuthService {
   /**
@@ -150,9 +151,8 @@ export class AuthService {
       }
     });
 
-    // 5. TODO: Implementar envío de email con Nodemailer aquí, usando el 'resetToken'
-    console.log(`[SIMULACIÓN] Enviando email de recuperación a: ${user.email}`);
-    console.log(`[SIMULACIÓN] Token de reseteo generado para usuario: ${user.nombre}`);
+    // 5. Enviar email de recuperación
+    await sendPasswordResetEmail(user.email, resetToken);
 
     // 6. Retornar el email al que se envió la recuperación
     return { email: user.email };
