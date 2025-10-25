@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RecoveryDto } from './dto/recovery.dto';
+  import { ResetPasswordDto } from './dto/reset-password.dto';
 
 const authService = new AuthService();
 
@@ -50,6 +51,22 @@ export class AuthController {
     try {
       const recoveryDto = req.body as RecoveryDto; // El DTO ya fue validado por el middleware
       const result = await authService.recovery(recoveryDto);
+      res.status(200).json({
+        status: 'success',
+        data: result,
+      });
+    } catch (error) {
+      next(error); // Pasa el error al middleware de errores
+    }
+  }
+
+  /**
+   * Maneja la solicitud de reseteo de contraseña.
+   */
+  async handleResetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const resetPasswordDto = req.body as ResetPasswordDto; // El DTO ya fue validado por el middleware
+      const result = await authService.resetPassword(resetPasswordDto);
       res.status(200).json({
         status: 'success',
         data: result,

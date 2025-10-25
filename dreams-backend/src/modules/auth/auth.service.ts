@@ -3,6 +3,7 @@ import { BcryptUtil } from '@/shared/utils/bcrypt.util';
 import { JwtUtil, JwtPayload } from '@/shared/utils/jwt.util';
 import { LoginDto } from './dto/login.dto';
 import { RecoveryDto } from './dto/recovery.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UnauthorizedError, NotFoundError } from '@/shared/errors/app-error';
 import { EstadoUsuario, Usuario } from '@prisma/client';
 import crypto from 'crypto';
@@ -156,5 +157,65 @@ export class AuthService {
 
     // 6. Retornar el email al que se envió la recuperación
     return { email: user.email };
+  }
+
+  /**
+   * Resetea la contraseña de un usuario usando un token válido.
+   * @param dto - Datos de reseteo (token, newPassword)
+   * @returns Mensaje de éxito
+   * @throws {NotFoundError} Si el token no existe o ha expirado.
+   */
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+    const { token, newPassword } = dto;
+
+    // 1. Buscar el token en la base de datos (incluyendo el usuario)
+    const resetTokenRecord = await prisma.passwordResetToken.findUnique({
+      where: { token },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            estado: true,
+            deletedAt: true,
+          },
+        },
+      },
+    });
+
+    if (!resetTokenRecord) {
+      throw new NotFoundError('Token de reseteo no válido o expirado');
+    }
+
+    // 2. Verificar que el token no haya expirado
+    if (resetTokenRecord.expiresAt < new Date()) {
+      // Eliminar el token expirado
+      await prisma.passwordResetToken.delete({
+        where: { id: resetTokenRecord.id },
+      });
+      throw new NotFoundError('Token de reseteo no válido o expirado');
+    }
+
+    // 3. Verificar que el usuario esté activo
+    if (resetTokenRecord.user.estado !== EstadoUsuario.ACTIVO || resetTokenRecord.user.deletedAt) {
+      throw new NotFoundError('Usuario no encontrado o inactivo');
+    }
+
+    // 4. Hashear la nueva contraseña
+    const hashedPassword = await BcryptUtil.hash(newPassword);
+
+    // 5. Actualizar la contraseña del usuario
+    await prisma.usuario.update({
+      where: { id: resetTokenRecord.user.id },
+      data: { password: hashedPassword },
+    });
+
+    // 6. Eliminar el token de reseteo (ya no es necesario)
+    await prisma.passwordResetToken.delete({
+      where: { id: resetTokenRecord.id },
+    });
+
+    // 7. Retornar mensaje de éxito
+    return { message: 'Contraseña cambiada exitosamente' };
   }
 }

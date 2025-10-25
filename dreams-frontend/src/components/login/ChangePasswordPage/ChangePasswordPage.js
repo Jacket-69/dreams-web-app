@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // Importa el archivo CSS
 import './ChangePasswordPage.css';
 // Importa el componente de alerta personalizada
@@ -15,12 +15,21 @@ const LOGO_URL = '/logo_blanco.png';
 
 const ChangePasswordPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Estado para el formulario de cambio de contraseña
   const [formData, setFormData] = useState({
     newPassword: '',
     confirmPassword: ''
   });
+
+  // Estado para el token de reseteo
+  const [resetToken, setResetToken] = useState('');
+
+  // Estados para la API
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   // Estado para los errores de validación
   const [errors, setErrors] = useState({
@@ -55,6 +64,23 @@ const ChangePasswordPage = () => {
     if (confirmPassword !== formData.newPassword) return 'Las contraseñas no coinciden';
     return '';
   };
+
+  // Leer token de la URL al cargar el componente
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      setResetToken(token);
+    } else {
+      setApiError('Token de reseteo no encontrado. Por favor, solicite un nuevo enlace de recuperación.');
+    }
+  }, [location.search]);
+
+  // Limpiar mensajes cuando el formulario cambie
+  useEffect(() => {
+    setApiError(null);
+    setSuccessMessage(null);
+  }, [formData]);
 
   // Validación en tiempo real
   useEffect(() => {
@@ -93,7 +119,7 @@ const ChangePasswordPage = () => {
     navigate('/login');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Marcar todos los campos como tocados para mostrar errores
@@ -114,13 +140,43 @@ const ChangePasswordPage = () => {
       return;
     }
 
+    // Si no hay token, no proceder
+    if (!resetToken) {
+      setApiError('Token de reseteo no encontrado. Por favor, solicite un nuevo enlace de recuperación.');
+      return;
+    }
+
     // Si no hay errores, proceder con el cambio de contraseña
-    console.log('Cambiando contraseña:', formData);
-    
-    // TODO: Aquí iría la lógica del backend para cambiar la contraseña
-    // Por ahora simulamos éxito y redirigimos al login
-    alert('Contraseña cambiada exitosamente');
-    navigate('/login');
+    setIsLoading(true);
+    setApiError(null);
+
+    try {
+      const response = await fetch('/api/v1/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: resetToken,
+          newPassword: formData.newPassword
+        })
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Contraseña cambiada exitosamente. Redirigiendo al login...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setApiError(responseData.message || 'Error al cambiar la contraseña');
+      }
+    } catch (error) {
+      setApiError('Error de conexión. Por favor, intente nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -143,6 +199,22 @@ const ChangePasswordPage = () => {
         <div className="change-password-form-container">
           <form className="change-password-form" onSubmit={handleSubmit} noValidate>
             <h1 className="change-password-title">CAMBIAR CONTRASEÑA</h1>
+            
+            {/* Alert para errores de API */}
+            <Alert
+              type="error"
+              message={apiError}
+              show={!!apiError}
+              position="relative"
+            />
+
+            {/* Alert para mensajes de éxito */}
+            <Alert
+              type="success"
+              message={successMessage}
+              show={!!successMessage}
+              position="relative"
+            />
             
             {/* Campo Contraseña Nueva */}
             <div className="form-group">
@@ -214,8 +286,12 @@ const ChangePasswordPage = () => {
               />
             </div>
 
-            <button type="submit" className="change-password-button">
-              CAMBIAR CONTRASEÑA
+            <button 
+              type="submit" 
+              className="change-password-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'CAMBIANDO CONTRASEÑA...' : 'CAMBIAR CONTRASEÑA'}
             </button>
 
             <button type="button" className="back-to-login-link" onClick={handleBackToLogin}>
