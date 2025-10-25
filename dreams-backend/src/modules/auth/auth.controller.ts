@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RecoveryDto } from './dto/recovery.dto';
 
 const authService = new AuthService();
 
@@ -39,6 +40,22 @@ export class AuthController {
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  /**
+   * Maneja la solicitud de recuperación de contraseña.
+   */
+  async handleRecovery(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const recoveryDto = req.body as RecoveryDto; // El DTO ya fue validado por el middleware
+      const result = await authService.recovery(recoveryDto);
+      res.status(200).json({
+        status: 'success',
+        data: result,
+      });
+    } catch (error) {
+      next(error); // Pasa el error al middleware de errores
     }
   }
 

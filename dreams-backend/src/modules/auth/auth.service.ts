@@ -2,6 +2,7 @@ import { prisma } from '@/config/database';
 import { BcryptUtil } from '@/shared/utils/bcrypt.util';
 import { JwtUtil, JwtPayload } from '@/shared/utils/jwt.util';
 import { LoginDto } from './dto/login.dto';
+import { RecoveryDto } from './dto/recovery.dto';
 import { UnauthorizedError, NotFoundError } from '@/shared/errors/app-error';
 import { EstadoUsuario, Usuario } from '@prisma/client';
 
@@ -102,5 +103,49 @@ export class AuthService {
         permisosAsignados: undefined, // Remover la estructura anidada original
         permisos: permissions, // Agregar la lista plana de permisos
     };
+  }
+
+  /**
+   * Procesa la recuperación de contraseña por RUT.
+   * @param dto - Datos de recovery (rut)
+   * @returns Objeto con el email al que se envió la recuperación
+   * @throws {NotFoundError} Si el RUT no existe en la base de datos.
+   */
+  async recovery(dto: RecoveryDto): Promise<{ email: string }> {
+    const { rut } = dto;
+    const cleanRut = rut.replace(/\./g, '').trim();
+
+    // 1. Buscar usuario por RUT
+    const user = await prisma.usuario.findFirst({
+      where: { rut: cleanRut },
+      select: {
+        id: true,
+        email: true,
+        nombre: true,
+        estado: true,
+        deletedAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError('RUT no encontrado en el sistema');
+    }
+
+    // 2. Verificar que el usuario esté activo
+    if (user.estado !== EstadoUsuario.ACTIVO || user.deletedAt) {
+      throw new NotFoundError('RUT no encontrado en el sistema'); // Mensaje genérico por seguridad
+    }
+
+    // 3. TODO: Aquí iría la lógica real de:
+    // - Generar token de reseteo de contraseña
+    // - Enviar email con el enlace de recuperación
+    // - Guardar el token en la base de datos con expiración
+    
+    // Por ahora simulamos el envío del email
+    console.log(`[SIMULACIÓN] Enviando email de recuperación a: ${user.email}`);
+    console.log(`[SIMULACIÓN] Token de reseteo generado para usuario: ${user.nombre}`);
+
+    // 4. Retornar el email al que se envió la recuperación
+    return { email: user.email };
   }
 }

@@ -25,6 +25,10 @@ const RecoveryPage = () => {
     rut: false
   });
 
+  // Estados para la comunicación con el backend
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState(null);
+
   // Función para validar RUT con algoritmo módulo 11
   const validateRUT = (rut) => {
     if (!rut) return 'El RUT es requerido';
@@ -90,6 +94,11 @@ const RecoveryPage = () => {
     setErrors(newErrors);
   }, [formData, touched]);
 
+  // Limpiar errores de API cuando cambie el formulario
+  useEffect(() => {
+    setApiError(null);
+  }, [formData]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
@@ -119,7 +128,7 @@ const RecoveryPage = () => {
     navigate('/login');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Marcar el campo como tocado para mostrar errores
@@ -137,19 +146,39 @@ const RecoveryPage = () => {
       return;
     }
 
+
     // Si no hay errores, proceder con el envío
-    console.log('RUT para recuperación:', formData.rut);
-    
-    // TODO: Aquí el backend debería: ALEJANDROOOOOOOOOO xd
-    // 1. Buscar el correo asociado al RUT
-    // 2. Enviar el email de recuperación
-    // 3. Retornar el correo al que se envió
-    
-    // Por ahora simulamos un correo basado en el RUT
-    const simulatedEmail = `usuario${formData.rut.replace(/[^0-9]/g, '').slice(-4)}@ucen.cl`;
-    
-    // Navegar a la página de éxito con el correo como estado
-    navigate('/success', { state: { email: simulatedEmail } });
+    setIsLoading(true);
+    setApiError(null);
+
+    try {
+      const response = await fetch('/api/v1/auth/recovery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rut: formData.rut
+        })
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Error al procesar la recuperación');
+      }
+
+      // Desenvolver la respuesta
+      const { data } = responseData;
+      
+      // Navegar a la página de éxito con el correo real del backend
+      navigate('/success', { state: { email: data.email } });
+
+    } catch (error) {
+      setApiError(error.message || 'Error de conexión. Intente nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -173,6 +202,14 @@ const RecoveryPage = () => {
           <form className="recovery-form" onSubmit={handleSubmit} noValidate>
             <h1 className="recovery-title">RECUPERAR CONTRASEÑA</h1>
             
+            {/* Alert para errores de API */}
+            <Alert
+              type="error"
+              message={apiError}
+              show={!!apiError}
+              position="relative"
+            />
+            
             {/* Campo RUT */}
             <div className="form-group">
               <label htmlFor="rut" className="form-label">RUT</label>
@@ -194,8 +231,8 @@ const RecoveryPage = () => {
               />
             </div>
 
-            <button type="submit" className="recovery-button">
-              RECUPERAR CONTRASEÑA
+            <button type="submit" className="recovery-button" disabled={isLoading}>
+              {isLoading ? 'Procesando...' : 'RECUPERAR CONTRASEÑA'}
             </button>
 
             <button type="button" className="back-to-login-link" onClick={handleBackToLogin}>
