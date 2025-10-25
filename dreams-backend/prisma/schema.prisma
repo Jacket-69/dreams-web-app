@@ -116,6 +116,7 @@ model Usuario {
   invitacionesRecibidas        InvitacionProyecto[]       @relation("InvitadoProyecto")
   invitacionesEnviadas         InvitacionProyecto[]       @relation("InvitadorProyecto")
   asignaturasComoDoncente      DetalleProyectoAsignatura[]
+  passwordResetTokens          PasswordResetToken[]
 
   @@index([email])
   @@index([rut])
@@ -160,6 +161,21 @@ model UsuarioPermiso {
   @@id([idUsuario, idPermiso])
   @@index([idUsuario])
   @@map("usuario_permiso")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userId    String
+
+  // Relaciones
+  user Usuario @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 // ========================================

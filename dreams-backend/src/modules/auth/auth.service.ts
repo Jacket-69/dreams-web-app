@@ -5,6 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { RecoveryDto } from './dto/recovery.dto';
 import { UnauthorizedError, NotFoundError } from '@/shared/errors/app-error';
 import { EstadoUsuario, Usuario } from '@prisma/client';
+import crypto from 'crypto';
 
 export class AuthService {
   /**
@@ -136,16 +137,24 @@ export class AuthService {
       throw new NotFoundError('RUT no encontrado en el sistema'); // Mensaje genérico por seguridad
     }
 
-    // 3. TODO: Aquí iría la lógica real de:
-    // - Generar token de reseteo de contraseña
-    // - Enviar email con el enlace de recuperación
-    // - Guardar el token en la base de datos con expiración
-    
-    // Por ahora simulamos el envío del email
+    // 3. Generar token de reseteo de contraseña
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+    // 4. Guardar el token en la base de datos
+    await prisma.passwordResetToken.create({
+      data: {
+        token: resetToken,
+        expiresAt: expiresAt,
+        userId: user.id
+      }
+    });
+
+    // 5. TODO: Implementar envío de email con Nodemailer aquí, usando el 'resetToken'
     console.log(`[SIMULACIÓN] Enviando email de recuperación a: ${user.email}`);
     console.log(`[SIMULACIÓN] Token de reseteo generado para usuario: ${user.nombre}`);
 
-    // 4. Retornar el email al que se envió la recuperación
+    // 6. Retornar el email al que se envió la recuperación
     return { email: user.email };
   }
 }
