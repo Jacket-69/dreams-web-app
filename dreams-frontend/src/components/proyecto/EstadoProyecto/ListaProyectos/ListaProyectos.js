@@ -77,63 +77,7 @@ const ListaProyectos = () => {
       dueno: 'Benjamin Lopez',
       tipo: 'Proyecto Personal',
       estado: 'CANCELADO'
-    },
-    {
-      id: 11,
-      nombre: 'APP DE FINAZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 12,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 13,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 14,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 15,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 16,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 17,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
-    {
-      id: 18,
-      nombre: 'APP DE FINANZAS',
-      dueno: 'Benjamin Lopez',
-      tipo: 'Proyecto Personal',
-      estado: 'CANCELADO'
-    },
+    }
   ];
 
   // Filtrar proyectos según búsqueda y filtro activo

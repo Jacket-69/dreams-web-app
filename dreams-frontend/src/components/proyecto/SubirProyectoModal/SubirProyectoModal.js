@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import './SubirProyectoModal.css';
 
 const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
+  const lenguajesDisponibles = [
+    'React', 'Vue', 'Angular', 'Node.js', 'Python', 'Java', 
+    'JavaScript', 'TypeScript', 'PHP', 'C#', 'C++'
+  ];
+
   const [formData, setFormData] = useState({
     titulo: '',
     descripcion: '',
-    lenguajes: '',
+    lenguajes: [],
     tipoProyecto: '',
     imagen: null
   });
@@ -25,6 +30,27 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
       setErrores(prev => ({
         ...prev,
         [name]: ''
+      }));
+    }
+  };
+
+  const handleLenguajeChange = (lenguaje) => {
+    setFormData(prev => {
+      const lenguajes = prev.lenguajes.includes(lenguaje)
+        ? prev.lenguajes.filter(l => l !== lenguaje)
+        : [...prev.lenguajes, lenguaje];
+      
+      return {
+        ...prev,
+        lenguajes
+      };
+    });
+    
+    // Limpiar error cuando se seleccione un lenguaje
+    if (errores.lenguajes) {
+      setErrores(prev => ({
+        ...prev,
+        lenguajes: ''
       }));
     }
   };
@@ -72,7 +98,7 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
       nuevosErrores.descripcion = 'La descripción es requerida';
     }
 
-    if (!formData.lenguajes.trim()) {
+    if (formData.lenguajes.length === 0) {
       nuevosErrores.lenguajes = 'Debe seleccionar al menos un lenguaje';
     }
 
@@ -93,7 +119,7 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
       setFormData({
         titulo: '',
         descripcion: '',
-        lenguajes: '',
+        lenguajes: [],
         tipoProyecto: '',
         imagen: null
       });
@@ -105,7 +131,7 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
     setFormData({
       titulo: '',
       descripcion: '',
-      lenguajes: '',
+      lenguajes: [],
       tipoProyecto: '',
       imagen: null
     });
@@ -125,7 +151,8 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
 
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-grid">
-            <div className="form-column">
+            {/* Columna Izquierda */}
+            <div className="form-column-left">
               <div className="form-group">
                 <label htmlFor="titulo" className="form-label">
                   Título*
@@ -143,51 +170,6 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="descripcion" className="form-label">
-                  Descripción*
-                </label>
-                <textarea
-                  id="descripcion"
-                  name="descripcion"
-                  value={formData.descripcion}
-                  onChange={handleInputChange}
-                  className={`form-textarea ${errores.descripcion ? 'error' : ''}`}
-                  placeholder="Describa su proyecto..."
-                  rows="5"
-                />
-                {errores.descripcion && <span className="error-message">{errores.descripcion}</span>}
-              </div>
-            </div>
-
-            <div className="form-column">
-              <div className="form-group">
-                <label htmlFor="lenguajes" className="form-label">
-                  Lenguajes Utilizados*
-                </label>
-                <select
-                  id="lenguajes"
-                  name="lenguajes"
-                  value={formData.lenguajes}
-                  onChange={handleInputChange}
-                  className={`form-select ${errores.lenguajes ? 'error' : ''}`}
-                >
-                  <option value="">Seleccione las tecnologías...</option>
-                  <option value="React">React</option>
-                  <option value="Vue">Vue</option>
-                  <option value="Angular">Angular</option>
-                  <option value="Node.js">Node.js</option>
-                  <option value="Python">Python</option>
-                  <option value="Java">Java</option>
-                  <option value="JavaScript">JavaScript</option>
-                  <option value="TypeScript">TypeScript</option>
-                  <option value="PHP">PHP</option>
-                  <option value="C#">C#</option>
-                  <option value="C++">C++</option>
-                </select>
-                {errores.lenguajes && <span className="error-message">{errores.lenguajes}</span>}
-              </div>
-
-              <div className="form-group">
                 <label htmlFor="tipoProyecto" className="form-label">
                   Tipo de Proyecto*
                 </label>
@@ -201,10 +183,48 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
                   <option value="">Seleccione el tipo...</option>
                   <option value="Proyecto Personal">Proyecto Personal</option>
                   <option value="Proyecto de Asignatura">Proyecto de Asignatura</option>
-                  <option value="Tesis">Tesis</option>
-                  <option value="Investigación">Investigación</option>
+                  <option value="Proyecto Externo">Proyecto Externo</option>
                 </select>
                 {errores.tipoProyecto && <span className="error-message">{errores.tipoProyecto}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="descripcion" className="form-label">
+                  Descripción*
+                </label>
+                <textarea
+                  id="descripcion"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleInputChange}
+                  className={`form-textarea ${errores.descripcion ? 'error' : ''}`}
+                  placeholder="Describa su proyecto..."
+                />
+                {errores.descripcion && <span className="error-message">{errores.descripcion}</span>}
+              </div>
+            </div>
+
+            {/* Columna Derecha */}
+            <div className="form-column-right">
+              <div className="form-group">
+                <label htmlFor="lenguajes" className="form-label">
+                  Lenguajes Utilizados*
+                </label>
+                <div className={`lenguajes-container ${errores.lenguajes ? 'error' : ''}`}>
+                  {lenguajesDisponibles.map((lenguaje) => (
+                    <div key={lenguaje} className="checkbox-group">
+                      <label className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={formData.lenguajes.includes(lenguaje)}
+                          onChange={() => handleLenguajeChange(lenguaje)}
+                        />
+                        <span>{lenguaje}</span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {errores.lenguajes && <span className="error-message">{errores.lenguajes}</span>}
               </div>
 
               <div className="form-group">
@@ -219,7 +239,7 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
                   onClick={() => document.getElementById('imagen').click()}
                 >
                   <div className="upload-content">
-                    <svg className="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d0d0d0" strokeWidth="1.5" fill="none"/>
                       <path d="M12 8v6M9 11l3-3 3 3" stroke="#d0d0d0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -228,8 +248,9 @@ const SubirProyectoModal = ({ isOpen, onClose, onSubirProyecto }) => {
                     ) : (
                       <>
                         <p className="upload-text">
-                          Arrastra y suelta tu archivo aquí o haz click para buscar
+                          Arrastra y suelta tu archivo aquí
                         </p>
+                        <p className="upload-text-small">o haz click para buscar</p>
                         <p className="upload-info">JPG, PNG (Max. 10MB)</p>
                       </>
                     )}
