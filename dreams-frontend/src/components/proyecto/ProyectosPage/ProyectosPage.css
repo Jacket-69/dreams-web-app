@@ -1,0 +1,233 @@
+.proyectos-page {
+  padding: 24px;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.proyectos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.proyectos-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.btn-subir-proyecto {
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-subir-proyecto:hover {
+  background-color: rgb(245, 160, 78);
+}
+
+/* Estilos para filtros removidos - ahora se manejan en FilterBar.css */
+
+.tabla-container {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.tabla-proyectos {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tabla-proyectos thead {
+  background-color: #f8f9fa;
+}
+
+.tabla-proyectos th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tabla-proyectos th:nth-child(1) { width: 40%; } /* NOMBRE */
+.tabla-proyectos th:nth-child(2) { width: 20%; } /* TUTOR */
+.tabla-proyectos th:nth-child(3) { width: 25%; } /* ASIGNATURA */
+.tabla-proyectos th:nth-child(4) { width: 15%; } /* ESTADO */
+
+.tabla-proyectos td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+.tabla-proyectos tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.columna-nombre {
+  font-weight: 500;
+  color: #000;
+}
+
+.columna-tutor,
+.columna-asignatura {
+  color: #666;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.estado-en-proceso {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.estado-finalizado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado-cancelado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.estado-rechazado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.estado-pausado {
+  background-color: #e2e3e5;
+  color: #6c757d;
+}
+
+.estado-esperando {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.estado-para-aprobar {
+  background-color: #ffeaa7;
+  color: #d63031;
+}
+
+.estado-default {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding: 16px 0;
+}
+
+.btn-pagina {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #9ca3af;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-pagina:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.btn-pagina:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+.pagina-actual {
+  background-color: rgb(245, 160, 78);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 44px;
+  height: 44px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.paginacion-info {
+  font-size: 14px;
+  color: #6b7280;
+  margin-left: 16px;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .proyectos-page {
+    padding: 16px;
+  }
+  
+  .proyectos-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .proyectos-title {
+    font-size: 24px;
+  }
+  
+  /* Los filtros ahora se manejan en FilterBar.css */
+  
+  .tabla-container {
+    overflow-x: auto;
+  }
+  
+  .tabla-proyectos {
+    min-width: 600px;
+  }
+}
+

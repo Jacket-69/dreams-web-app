@@ -1,0 +1,96 @@
+/* Estilos del Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background-color: var(--primary-blue);
+  z-index: 1000;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+}
+
+.header-container {
+  width: 100%;
+  padding: 0 1rem 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Logo */
+.logo-section {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo-image {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Perfil de usuario */
+.user-section {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.user-profile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.user-icon-container {
+  width: 65px; /* 🔥 Cambia este valor para agrandar/reducir el ícono */
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-icon {
+  width: 100%;
+  height: 100%;
+  fill: white;
+}
+
+.user-profile:focus {
+  outline: 2px solid var(--orange-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    height: 90px;
+  }
+
+  .user-icon-container {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    height: 85px;
+  }
+
+  .user-icon-container {
+    width: 40px;
+    height: 40px;
+  }
+}

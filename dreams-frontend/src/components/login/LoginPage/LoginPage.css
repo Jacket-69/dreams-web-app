@@ -106,6 +106,10 @@
   position: relative;
 }
 
+.form-group:first-of-type {
+  margin-bottom: 0.8rem;
+}
+
 .form-label {
   display: block;
   color: white;

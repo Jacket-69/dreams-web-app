@@ -1,0 +1,84 @@
+/* Estilos específicos del Sidebar */
+.sidebar {
+  width: 280px;
+  background-color: var(--primary-blue);
+  padding-top: 80px;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 999;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.nav-item {
+  margin: 0.5rem 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  color: var(--white);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-link.active {
+  background-color: var(--orange-accent);
+  border-left-color: transparent;
+  border-left-width: 4px;
+  color: var(--primary-blue);
+  position: relative;
+}
+
+.nav-link.active:hover {
+  background-color: var(--orange-accent);
+}
+
+.nav-link.active .nav-icon img {
+  filter: brightness(0) saturate(100%) invert(21%) sepia(100%) saturate(1000%) hue-rotate(200deg) brightness(1) contrast(100%);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.config-section {
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+

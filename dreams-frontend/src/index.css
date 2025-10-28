@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -8,6 +10,43 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--light-background);
   color: var(--dark-text);
+}
+
+/* Reset para páginas de login */
+.login-page {
+  color: white !important;
+}
+
+.login-page .form-label,
+.login-page .login-title,
+.login-page .forgot-password-link {
+  color: white !important;
+}
+
+/* Reset para páginas de recuperación */
+.recovery-page {
+  color: white !important;
+}
+
+.recovery-page .form-label,
+.recovery-page .recovery-title,
+.recovery-page .back-to-login-link {
+  color: white !important;
+}
+
+/* Reset para páginas de éxito y cambio de contraseña */
+.success-page,
+.change-password-page {
+  color: white !important;
+}
+
+.success-page .form-label,
+.success-page .success-title,
+.success-page .back-to-login-link,
+.change-password-page .form-label,
+.change-password-page .change-password-title,
+.change-password-page .back-to-login-link {
+  color: white !important;
 }
 
 /* Variables de colores */
